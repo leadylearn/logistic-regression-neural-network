@@ -18,15 +18,17 @@ logistic-regression-neural-network/
 ├── app.py                          # Application Flask principale
 ├── requirements.txt                 # Dépendances Python
 ├── README.md                       # Documentation du projet
+├── .gitignore                      # Fichiers ignorés par Git
 ├── templates/                      # Templates HTML
-│   ├── index.html                  # Page d'accueil
-│   ├── demo.html                   # Page de démo
+│   ├── index.html                  # Page d'accueil moderne
+│   ├── demo.html                   # Galerie de démo interactive
 │   └── docs.html                   # Documentation technique
-├── images/                         # Images et datasets
-│   ├── my_image.jpg
-│   ├── image1.png
-│   ├── image2.png
-│   └── ...
+├── static/
+│   └── images/                    # Images pour la démo
+│       ├── my_image.jpg
+│       ├── image1.png
+│       ├── image2.png
+│       └── ...
 └── Logistic Regression as a Neural Network/
     ├── Logistic.ipynb              # Notebook Jupyter du TP
     ├── lr_utils.py                 # Fonctions utilitaires
@@ -206,8 +208,23 @@ Développé dans le cadre d'un TP de Machine Learning sur la régression logisti
 ## 🔗 Liens utiles
 
 - **[Dépôt GitHub](https://github.com/leadylearn/logistic-regression-neural-network)**
-- **[Démo interactive](http://localhost:5000/demo)** (une fois lancée)
-- **[Documentation technique](http://localhost:5000/docs)** (une fois lancée)
+- **[Démo interactive](https://github.com/leadylearn/logistic-regression-neural-network#d%C3%A9mo-en-direct)** 
+- **[Documentation technique](https://github.com/leadylearn/logistic-regression-neural-network#documentation)**
+
+### 🚀 Lancement rapide
+
+Après avoir cloné le projet :
+
+```bash
+# Lancer l'application
+python app.py
+
+# Accéder aux interfaces :
+# Page d'accueil : http://localhost:5000
+# Démo interactive : http://localhost:5000/demo  
+# Documentation : http://localhost:5000/docs
+# API info : http://localhost:5000/api/info
+```
 
 ---
 

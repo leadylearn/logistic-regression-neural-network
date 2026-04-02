@@ -3,174 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Démo - Cat Classifier</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Démo Interactive | Cat Classifier</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-soft: #eef2ff;
+            --secondary: #f43f5e;
+            --warm-bg: #fdfcfb;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-warm: #fff7ed;
+            --border-color: rgba(226, 232, 240, 0.8);
+        }
+
+        body {
+            background-color: var(--warm-bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #fff5f5 0%, #fffcf9 50%, #f0f7ff 100%);
+            z-index: -1;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary) !important;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-muted) !important;
+            margin: 0 10px;
+        }
+
+        .nav-link.active {
+            color: var(--primary) !important;
+            font-weight: 700;
+        }
+
+        .header-section {
+            padding: 80px 0 40px;
+            text-align: center;
+        }
+
+        .badge-soft {
+            background: var(--primary-soft);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: #0f172a;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Demo Grid Styling */
         .demo-card {
-            transition: transform 0.3s;
+            border-radius: 20px;
+            overflow: hidden;
             cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: 2px solid transparent;
+            background: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
+
         .demo-card:hover {
-            transform: scale(1.05);
-            border-color: #667eea;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary-soft);
         }
+
         .demo-card.selected {
-            border-color: #28a745;
-            box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-soft);
         }
+
+        .card-img-wrapper {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .demo-card:hover .card-img-top {
+            transform: scale(1.1);
+        }
+
         .result-overlay {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.8rem;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(4px);
+            padding: 15px;
+            text-align: center;
         }
-        .cat-result {
-            background-color: #28a745;
+
+        .result-overlay.active {
+            opacity: 1;
+        }
+
+        .res-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .res-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .res-conf {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .btn-custom {
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-custom {
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(99, 102, 241, 0.3);
             color: white;
         }
-        .non-cat-result {
-            background-color: #ffc107;
-            color: black;
+
+        .btn-outline-custom {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-outline-custom:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 24px;
+            border: none;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+        }
+
+        .stat-pill {
+            background: var(--warm-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-pill h3 {
+            font-weight: 800;
+            margin-bottom: 0;
+            color: var(--primary);
+        }
+
+        footer {
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 80px;
+            background: rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="/">🐱 Cat Classifier</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="/">Accueil</a>
-                <a class="nav-link active" href="/demo">Démo</a>
-                <a class="nav-link" href="/docs">Documentation</a>
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="bi bi-cpu-fill me-2"></i>
+                <span>CatClassifier</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/demo">Démo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/docs">Documentation</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Header -->
-    <div class="bg-primary text-white py-5">
-        <div class="container text-center">
-            <h1 class="display-4">🎮 Démo Interactive</h1>
-            <p class="lead">Testez le modèle avec des images exemples</p>
+    <header class="header-section">
+        <div class="container">
+            <span class="badge-soft">Expérience Interactive</span>
+            <h1 class="display-4 mb-3">Galerie de <span class="text-gradient">Démonstration</span></h1>
+            <p class="lead text-muted mx-auto" style="max-width: 600px;">
+                Explorez les capacités de notre modèle en testant ces images prédéfinies. 
+                Cliquez sur n'importe quelle image pour lancer l'analyse instantanée.
+            </p>
+            
+            <div class="d-flex justify-content-center gap-3 mt-5">
+                <button class="btn btn-custom btn-primary-custom" onclick="loadAllImages()">
+                    <i class="bi bi-play-circle-fill"></i> Tout analyser
+                </button>
+                <button class="btn btn-custom btn-outline-custom" onclick="clearResults()">
+                    <i class="bi bi-trash3"></i> Réinitialiser
+                </button>
+                <button class="btn btn-custom btn-outline-custom" onclick="showStats()">
+                    <i class="bi bi-bar-chart-fill"></i> Statistiques
+                </button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Demo Content -->
-    <div class="container my-5">
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h3>📸 Images de démonstration</h3>
-                        <p>Cliquez sur une image pour tester la classification. Les résultats apparaîtront directement sur l'image.</p>
-                        
-                        <div class="btn-group mb-3" role="group">
-                            <button type="button" class="btn btn-outline-primary" onclick="loadAllImages()">Tout charger</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="clearResults()">Effacer résultats</button>
-                            <button type="button" class="btn btn-outline-info" onclick="showStats()">Statistiques</button>
+    <!-- Demo Grid -->
+    <main class="container py-5">
+        <div class="row g-4" id="demoGrid">
+            <!-- Image 1 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'my_image.jpg')">
+                    <div class="card-img-wrapper">
+                        <img src="images/my_image.jpg" class="card-img-top" alt="Test 1">
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Demo Images Grid -->
-        <div class="row" id="demoGrid">
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'my_image.jpg')">
-                    <div class="position-relative">
-                        <img src="images/my_image.jpg" class="card-img-top" alt="Test Image 1">
-                        <div class="result-overlay" style="display: none;"></div>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-title">Image Test 1</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">Image Test 1</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'image1.png')">
-                    <div class="position-relative">
-                        <img src="images/image1.png" class="card-img-top" alt="Test Image 2">
-                        <div class="result-overlay" style="display: none;"></div>
+            <!-- Image 2 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'image1.png')">
+                    <div class="card-img-wrapper">
+                        <img src="images/image1.png" class="card-img-top" alt="Test 2">
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title">Image Test 2</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'image2.png')">
-                    <div class="position-relative">
-                        <img src="images/image2.png" class="card-img-top" alt="Test Image 3">
-                        <div class="result-overlay" style="display: none;"></div>
-                    </div>
-                    <div class="card-body">
-                        <h6 class="card-title">Image Test 3</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">Image Test 2</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'cat_in_iran.jpg')">
-                    <div class="position-relative">
-                        <img src="images/cat_in_iran.jpg" class="card-img-top" alt="Cat in Iran">
-                        <div class="result-overlay" style="display: none;"></div>
+            <!-- Image 3 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'image2.png')">
+                    <div class="card-img-wrapper">
+                        <img src="images/image2.png" class="card-img-top" alt="Test 3">
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title">Chat en Iran</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">Image Test 3</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'gargouille.jpg')">
-                    <div class="position-relative">
+            <!-- Image 4 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'cat_in_iran.jpg')">
+                    <div class="card-img-wrapper">
+                        <img src="images/cat_in_iran.jpg" class="card-img-top" alt="Chat en Iran">
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
+                        </div>
+                    </div>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">Chat en Iran</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image 5 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'gargouille.jpg')">
+                    <div class="card-img-wrapper">
                         <img src="images/gargouille.jpg" class="card-img-top" alt="Gargouille">
-                        <div class="result-overlay" style="display: none;"></div>
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title">Gargouille</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">Gargouille</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card demo-card" onclick="testImage(this, 'la_defense.jpg')">
-                    <div class="position-relative">
+            <!-- Image 6 -->
+            <div class="col-md-4 col-lg-3">
+                <div class="demo-card" onclick="testImage(this, 'la_defense.jpg')">
+                    <div class="card-img-wrapper">
                         <img src="images/la_defense.jpg" class="card-img-top" alt="La Défense">
-                        <div class="result-overlay" style="display: none;"></div>
+                        <div class="result-overlay">
+                            <div class="res-icon"></div>
+                            <div class="res-label"></div>
+                            <div class="res-conf"></div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <h6 class="card-title">La Défense</h6>
-                        <small class="text-muted">Cliquez pour tester</small>
+                    <div class="p-3 text-center">
+                        <h6 class="mb-1 fw-bold">La Défense</h6>
+                        <span class="small text-muted">Cliquer pour tester</span>
                     </div>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- Statistics Modal -->
-        <div class="modal fade" id="statsModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">📊 Statistiques des prédictions</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="statsContent">
-                            <p>Aucune prédiction effectuée pour le moment.</p>
-                        </div>
+    <!-- Statistics Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-bar-chart-fill text-primary me-2"></i> Rapport d'Analyse</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="statsContent">
+                        <!-- Content injected by JS -->
                     </div>
                 </div>
             </div>
@@ -178,13 +419,15 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container text-center">
-            <p>&copy; 2024 Cat Classifier - TP Régression Logistique</p>
+    <footer class="text-center">
+        <div class="container">
+            <p class="text-muted mb-0">&copy; 2024 Cat Classifier - Laboratoire de Test</p>
+            <p class="small text-muted mt-2">Développé avec Flask & NumPy</p>
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let predictions = [];
         let statsModal;
@@ -194,25 +437,25 @@
         });
 
         async function testImage(card, imageName) {
-            // Ajouter l'effet de sélection
-            card.classList.add('selected');
+            if (card.classList.contains('processing')) return;
             
-            // Montrer l'indicateur de chargement
+            card.classList.add('selected', 'processing');
             const overlay = card.querySelector('.result-overlay');
-            overlay.style.display = 'block';
-            overlay.className = 'result-overlay bg-secondary text-white';
-            overlay.textContent = '⏳ Analyse...';
+            const icon = overlay.querySelector('.res-icon');
+            const label = overlay.querySelector('.res-label');
+            const conf = overlay.querySelector('.res-conf');
+
+            overlay.classList.add('active');
+            icon.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+            label.textContent = 'Analyse...';
+            conf.textContent = '';
 
             try {
-                // Créer un FormData pour l'upload
                 const formData = new FormData();
-                
-                // Récupérer l'image
-                const response = await fetch(`images/${imageName}`);
+                const response = await fetch(`/images/${imageName}`);
                 const blob = await response.blob();
                 formData.append('image', blob, imageName);
 
-                // Envoyer à l'API
                 const predictResponse = await fetch('/predict', {
                     method: 'POST',
                     body: formData
@@ -221,104 +464,90 @@
                 const data = await predictResponse.json();
 
                 if (data.success) {
-                    // Afficher le résultat
                     const isCat = data.prediction.toLowerCase().includes('cat');
-                    overlay.className = `result-overlay ${isCat ? 'cat-result' : 'non-cat-result'}`;
-                    overlay.textContent = `${data.prediction} (${(data.confidence * 100).toFixed(1)}%)`;
+                    const confidence = (data.confidence * 100).toFixed(1);
                     
-                    // Stocker la prédiction
+                    icon.innerHTML = isCat ? '🐱' : '🚫';
+                    label.textContent = isCat ? 'C\'est un chat !' : 'Pas un chat';
+                    label.className = `res-label ${isCat ? 'text-success' : 'text-warning'}`;
+                    conf.textContent = `Confiance : ${confidence}%`;
+                    
                     predictions.push({
                         image: imageName,
                         prediction: data.prediction,
                         confidence: data.confidence,
                         isCat: isCat
                     });
-                    
-                    // Retirer la sélection après un délai
-                    setTimeout(() => {
-                        card.classList.remove('selected');
-                    }, 1000);
-                } else {
-                    throw new Error(data.error);
                 }
             } catch (error) {
-                overlay.className = 'result-overlay bg-danger text-white';
-                overlay.textContent = '❌ Erreur';
-                console.error('Erreur:', error);
-                card.classList.remove('selected');
+                icon.innerHTML = '❌';
+                label.textContent = 'Erreur';
+                label.className = 'res-label text-danger';
+                conf.textContent = 'Serveur injoignable';
+            } finally {
+                card.classList.remove('processing');
             }
         }
 
         async function loadAllImages() {
             const cards = document.querySelectorAll('.demo-card');
             for (let card of cards) {
-                await new Promise(resolve => setTimeout(resolve, 500)); // Délai entre les tests
-                card.click();
+                if (!card.querySelector('.result-overlay').classList.contains('active')) {
+                    card.click();
+                    await new Promise(r => setTimeout(r, 300));
+                }
             }
         }
 
         function clearResults() {
             predictions = [];
-            const overlays = document.querySelectorAll('.result-overlay');
-            overlays.forEach(overlay => {
-                overlay.style.display = 'none';
-            });
-            const cards = document.querySelectorAll('.demo-card');
-            cards.forEach(card => {
-                card.classList.remove('selected');
-            });
+            document.querySelectorAll('.result-overlay').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.demo-card').forEach(el => el.classList.remove('selected', 'processing'));
         }
 
         function showStats() {
+            const content = document.getElementById('statsContent');
             if (predictions.length === 0) {
-                document.getElementById('statsContent').innerHTML = 
-                    '<p class="text-muted">Aucune prédiction effectuée pour le moment.</p>';
+                content.innerHTML = '<div class="text-center py-5"><i class="bi bi-inbox display-1 text-muted"></i><p class="mt-3 text-muted">Aucune donnée d\'analyse disponible.</p></div>';
             } else {
                 const cats = predictions.filter(p => p.isCat).length;
                 const nonCats = predictions.length - cats;
-                const avgConfidence = predictions.reduce((sum, p) => sum + p.confidence, 0) / predictions.length;
-                
-                document.getElementById('statsContent').innerHTML = `
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h5 class="card-title text-success">🐱 Chats</h5>
-                                    <h3>${cats}</h3>
-                                </div>
+                const avgConf = (predictions.reduce((acc, p) => acc + p.confidence, 0) / predictions.length * 100).toFixed(1);
+
+                content.innerHTML = `
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="stat-pill">
+                                <small class="text-muted d-block mb-1">Chats Détectés</small>
+                                <h3>${cats}</h3>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h5 class="card-title text-warning">🚫 Non-chats</h5>
-                                    <h3>${nonCats}</h3>
-                                </div>
+                        <div class="col-md-4">
+                            <div class="stat-pill">
+                                <small class="text-muted d-block mb-1">Non-Chats</small>
+                                <h3>${nonCats}</h3>
                             </div>
                         </div>
-                    </div>
-                    <div class="mt-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6>📊 Statistiques générales</h6>
-                                <p><strong>Total:</strong> ${predictions.length} prédictions</p>
-                                <p><strong>Confiance moyenne:</strong> ${(avgConfidence * 100).toFixed(1)}%</p>
-                                <p><strong>Taux de chats:</strong> ${((cats / predictions.length) * 100).toFixed(1)}%</p>
+                        <div class="col-md-4">
+                            <div class="stat-pill">
+                                <small class="text-muted d-block mb-1">Confiance Moyenne</small>
+                                <h3>${avgConf}%</h3>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <h6>Détail des prédictions:</h6>
-                        <div class="list-group">
-                            ${predictions.map(p => `
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>${p.image}</span>
-                                    <span class="badge ${p.isCat ? 'bg-success' : 'bg-warning'}">
-                                        ${p.prediction} (${(p.confidence * 100).toFixed(1)}%)
-                                    </span>
+                    <h6 class="fw-bold mb-3">Historique des sessions</h6>
+                    <div class="list-group list-group-flush">
+                        ${predictions.map(p => `
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle me-3 ${p.isCat ? 'bg-success' : 'bg-warning'}" style="width:10px;height:10px;"></div>
+                                    <span class="small fw-medium">${p.image}</span>
                                 </div>
-                            `).join('')}
-                        </div>
+                                <span class="badge ${p.isCat ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'} rounded-pill">
+                                    ${(p.confidence * 100).toFixed(1)}%
+                                </span>
+                            </div>
+                        `).join('')}
                     </div>
                 `;
             }
