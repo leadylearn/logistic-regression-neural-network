@@ -1,17 +1,17 @@
-# 🐱 Cat Classifier - Régression Logistique
+# Cat Classifier - Régression Logistique
 
-## 📖 Description
+## Description
 
 Ce projet implémente une application web de classification d'images utilisant la régression logistique vue comme un réseau de neurones. L'objectif est de classifier les images comme contenant un chat ou non-chat de manière automatique.
 
-## 🎯 Objectifs
+## Objectifs
 
 - Implémenter un algorithme de régression logistique avec approche réseau de neurones
 - Créer une interface web interactive pour les prédictions
 - Développer une API REST pour l'intégration
 - Comprendre les fondamentaux du machine learning
 
-## 📁 Structure du projet
+## Structure du projet
 
 ```
 logistic-regression-neural-network/
@@ -37,7 +37,7 @@ logistic-regression-neural-network/
         └── test_catvnoncat.h5
 ```
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 
@@ -65,7 +65,7 @@ logistic-regression-neural-network/
 4. **Accéder à l'application**
    Ouvrez votre navigateur sur [http://localhost:5000](http://localhost:5000)
 
-## 🎮 Utilisation
+## Utilisation
 
 ### Interface web
 
@@ -90,7 +90,7 @@ curl -X POST -F "image=@votre_image.jpg" http://localhost:5000/predict
 }
 ```
 
-## 📊 Performances
+## Performances
 
 ### Métriques du modèle
 
@@ -163,7 +163,7 @@ print('Response:', response.json())
 "
 ```
 
-## 🚀 Déploiement
+## Déploiement
 
 ### Développement
 ```bash
@@ -176,7 +176,7 @@ pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:5000 app:app
 ```
 
-## 🔧 Dépannage
+## Dépannage
 
 ### Problèmes courants
 
@@ -197,21 +197,21 @@ app.run(port=5001)
 ls "Logistic Regression as a Neural Network/datasets/"
 ```
 
-## 📄 Licence
+## Licence
 
 Ce projet est développé dans un cadre pédagogique.
 
-## 👨‍🏫 Auteur
+## Auteur
 
 Développé dans le cadre d'un TP de Machine Learning sur la régression logistique.
 
-## 🔗 Liens utiles
+## Liens utiles
 
 - **[Dépôt GitHub](https://github.com/leadylearn/logistic-regression-neural-network)**
 - **[Démo interactive](https://github.com/leadylearn/logistic-regression-neural-network#d%C3%A9mo-en-direct)** 
 - **[Documentation technique](https://github.com/leadylearn/logistic-regression-neural-network#documentation)**
 
-### 🚀 Lancement rapide
+### Lancement rapide
 
 Après avoir cloné le projet :
 
