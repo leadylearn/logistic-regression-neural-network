@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Démo - Cat Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .demo-card {
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .demo-card:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+        .demo-card.selected {
+            border-color: #28a745;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+        }
+        .result-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .cat-result {
+            background-color: #28a745;
+            color: white;
+        }
+        .non-cat-result {
+            background-color: #ffc107;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">🐱 Cat Classifier</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Accueil</a>
+                <a class="nav-link active" href="/demo">Démo</a>
+                <a class="nav-link" href="/docs">Documentation</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-primary text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-4">🎮 Démo Interactive</h1>
+            <p class="lead">Testez le modèle avec des images exemples</p>
+        </div>
+    </div>
+
+    <!-- Demo Content -->
+    <div class="container my-5">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3>📸 Images de démonstration</h3>
+                        <p>Cliquez sur une image pour tester la classification. Les résultats apparaîtront directement sur l'image.</p>
+                        
+                        <div class="btn-group mb-3" role="group">
+                            <button type="button" class="btn btn-outline-primary" onclick="loadAllImages()">Tout charger</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearResults()">Effacer résultats</button>
+                            <button type="button" class="btn btn-outline-info" onclick="showStats()">Statistiques</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Images Grid -->
+        <div class="row" id="demoGrid">
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'my_image.jpg')">
+                    <div class="position-relative">
+                        <img src="images/my_image.jpg" class="card-img-top" alt="Test Image 1">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Image Test 1</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'image1.png')">
+                    <div class="position-relative">
+                        <img src="images/image1.png" class="card-img-top" alt="Test Image 2">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Image Test 2</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'image2.png')">
+                    <div class="position-relative">
+                        <img src="images/image2.png" class="card-img-top" alt="Test Image 3">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Image Test 3</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'cat_in_iran.jpg')">
+                    <div class="position-relative">
+                        <img src="images/cat_in_iran.jpg" class="card-img-top" alt="Cat in Iran">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Chat en Iran</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'gargouille.jpg')">
+                    <div class="position-relative">
+                        <img src="images/gargouille.jpg" class="card-img-top" alt="Gargouille">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">Gargouille</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card demo-card" onclick="testImage(this, 'la_defense.jpg')">
+                    <div class="position-relative">
+                        <img src="images/la_defense.jpg" class="card-img-top" alt="La Défense">
+                        <div class="result-overlay" style="display: none;"></div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-title">La Défense</h6>
+                        <small class="text-muted">Cliquez pour tester</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Modal -->
+        <div class="modal fade" id="statsModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">📊 Statistiques des prédictions</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="statsContent">
+                            <p>Aucune prédiction effectuée pour le moment.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2024 Cat Classifier - TP Régression Logistique</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let predictions = [];
+        let statsModal;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            statsModal = new bootstrap.Modal(document.getElementById('statsModal'));
+        });
+
+        async function testImage(card, imageName) {
+            // Ajouter l'effet de sélection
+            card.classList.add('selected');
+            
+            // Montrer l'indicateur de chargement
+            const overlay = card.querySelector('.result-overlay');
+            overlay.style.display = 'block';
+            overlay.className = 'result-overlay bg-secondary text-white';
+            overlay.textContent = '⏳ Analyse...';
+
+            try {
+                // Créer un FormData pour l'upload
+                const formData = new FormData();
+                
+                // Récupérer l'image
+                const response = await fetch(`images/${imageName}`);
+                const blob = await response.blob();
+                formData.append('image', blob, imageName);
+
+                // Envoyer à l'API
+                const predictResponse = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await predictResponse.json();
+
+                if (data.success) {
+                    // Afficher le résultat
+                    const isCat = data.prediction.toLowerCase().includes('cat');
+                    overlay.className = `result-overlay ${isCat ? 'cat-result' : 'non-cat-result'}`;
+                    overlay.textContent = `${data.prediction} (${(data.confidence * 100).toFixed(1)}%)`;
+                    
+                    // Stocker la prédiction
+                    predictions.push({
+                        image: imageName,
+                        prediction: data.prediction,
+                        confidence: data.confidence,
+                        isCat: isCat
+                    });
+                    
+                    // Retirer la sélection après un délai
+                    setTimeout(() => {
+                        card.classList.remove('selected');
+                    }, 1000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                overlay.className = 'result-overlay bg-danger text-white';
+                overlay.textContent = '❌ Erreur';
+                console.error('Erreur:', error);
+                card.classList.remove('selected');
+            }
+        }
+
+        async function loadAllImages() {
+            const cards = document.querySelectorAll('.demo-card');
+            for (let card of cards) {
+                await new Promise(resolve => setTimeout(resolve, 500)); // Délai entre les tests
+                card.click();
+            }
+        }
+
+        function clearResults() {
+            predictions = [];
+            const overlays = document.querySelectorAll('.result-overlay');
+            overlays.forEach(overlay => {
+                overlay.style.display = 'none';
+            });
+            const cards = document.querySelectorAll('.demo-card');
+            cards.forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        function showStats() {
+            if (predictions.length === 0) {
+                document.getElementById('statsContent').innerHTML = 
+                    '<p class="text-muted">Aucune prédiction effectuée pour le moment.</p>';
+            } else {
+                const cats = predictions.filter(p => p.isCat).length;
+                const nonCats = predictions.length - cats;
+                const avgConfidence = predictions.reduce((sum, p) => sum + p.confidence, 0) / predictions.length;
+                
+                document.getElementById('statsContent').innerHTML = `
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title text-success">🐱 Chats</h5>
+                                    <h3>${cats}</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h5 class="card-title text-warning">🚫 Non-chats</h5>
+                                    <h3>${nonCats}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>📊 Statistiques générales</h6>
+                                <p><strong>Total:</strong> ${predictions.length} prédictions</p>
+                                <p><strong>Confiance moyenne:</strong> ${(avgConfidence * 100).toFixed(1)}%</p>
+                                <p><strong>Taux de chats:</strong> ${((cats / predictions.length) * 100).toFixed(1)}%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <h6>Détail des prédictions:</h6>
+                        <div class="list-group">
+                            ${predictions.map(p => `
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>${p.image}</span>
+                                    <span class="badge ${p.isCat ? 'bg-success' : 'bg-warning'}">
+                                        ${p.prediction} (${(p.confidence * 100).toFixed(1)}%)
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            statsModal.show();
+        }
+    </script>
+</body>
+</html>

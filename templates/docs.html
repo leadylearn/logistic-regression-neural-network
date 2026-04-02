@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Cat Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css">
+    <style>
+        .sidebar {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+        .content-section {
+            min-height: 100vh;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .endpoint-card {
+            transition: transform 0.2s;
+        }
+        .endpoint-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">🐱 Cat Classifier</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Accueil</a>
+                <a class="nav-link" href="/demo">Démo</a>
+                <a class="nav-link active" href="/docs">Documentation</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <h6 class="text-muted mb-3">Navigation</h6>
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#introduction">📖 Introduction</a>
+                    <a class="nav-link" href="#architecture">🏗️ Architecture</a>
+                    <a class="nav-link" href="#installation">💻 Installation</a>
+                    <a class="nav-link" href="#api">🔌 API Reference</a>
+                    <a class="nav-link" href="#examples">💡 Exemples</a>
+                    <a class="nav-link" href="#performance">📊 Performance</a>
+                    <a class="nav-link" href="#troubleshooting">🔧 Dépannage</a>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 content-section p-4">
+                <!-- Introduction -->
+                <section id="introduction" class="mb-5">
+                    <h2>📖 Introduction</h2>
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Qu'est-ce que Cat Classifier ?</h4>
+                            <p>Cat Classifier est une application de machine learning qui utilise la régression logistique pour classifier les images comme contenant un chat ou non. Ce projet démontre l'implémentation d'un réseau de neurones simple pour la classification d'images.</p>
+                            
+                            <h5 class="mt-3">🎯 Objectifs pédagogiques</h5>
+                            <ul>
+                                <li>Comprendre les fondamentaux de la régression logistique</li>
+                                <li>Implémenter un réseau de neurones à une couche</li>
+                                <li>Créer une API web avec Flask</li>
+                                <li>Déployer une application de machine learning</li>
+                            </ul>
+
+                            <h5 class="mt-3">🔬 Technologies utilisées</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li><strong>Backend:</strong> Python, Flask</li>
+                                        <li><strong>Machine Learning:</strong> NumPy, SciPy</li>
+                                        <li><strong>Traitement d'images:</strong> PIL, Matplotlib</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul>
+                                        <li><strong>Frontend:</strong> HTML5, Bootstrap 5</li>
+                                        <li><strong>Dataset:</strong> Cats vs Non-cats (64x64)</li>
+                                        <li><strong>Algorithm:</strong> Logistic Regression</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Architecture -->
+                <section id="architecture" class="mb-5">
+                    <h2>🏗️ Architecture du système</h2>
+                    
+                    <h4>Architecture globale</h4>
+                    <div class="text-center mb-4">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB4PSIxMCIgeT0iMTAiIHdpZHRoPSIxNTAiIGhlaWdodD0iODAiIGZpbGw9IiMwMDc0Q0YiIHJ4PSI1Ii8+CiAgPHRleHQgeD0iODUiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxNCI+RnJvbnRlbmQ8L3RleHQ+CiAgPHJlY3QgeD0iMTgwIiB5PSIxMCIgd2lkdGg9IjE1MCIgaGVpZ2h0PSI4MCIgZmlsbD0iIzI4QTc0NSIgcng9IjUiLz4KICA8dGV4dCB4PSIyNTUiIHk9IjU1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxNCI+Rmxhc2sgQVBJPC90ZXh0PgogIDxyZWN0IHg9IjM1MCIgeT0iMTAiIHdpZHRoPSIxNTAiIGhlaWdodD0iODAiIGZpbGw9IiNGRjY4MDAiIHJ4PSI1Ii8+CiAgPHRleHQgeD0iNDI1IiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMTQiPk1vZGVsZSBNTDwvdGV4dD4KICA8cmVjdCB4PSI1MjAiIHk9IjEwIiB3aWR0aD0iMTUwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjNkM3NTdkIiByeD0iNSIvPgogIDx0ZXh0IHg9IjU5NSIgeT0iNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IndoaXRlIiBmb250LXNpemU9IjE0Ij5QcmVkaWN0aW9uPC90ZXh0PgogIDxyZWN0IHg9IjY5MCIgeT0iMTAiIHdpZHRoPSIxMDAiIGhlaWdodD0iODAiIGZpbGw9IiM2Qzc1N2QiIHJ4PSI1Ii8+CiAgPHRleHQgeD0iNzQwIiB5PSI1NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMTQiPlJlc3VsdDwvdGV4dD4KCiAgPCEtLSBGbGVjaGVzIC0tPgogIDxwYXRoIGQ9Ik0gMTYwIDUwIEwgMTgwIDUwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsI2Fycm93aGVhZCIvPgogIDxwYXRoIGQ9Ik0gMzMwIDUwIEwgMzUwIDUwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsI2Fycm93aGVhZCIvPgogIDxwYXRoIGQ9Ik0gNTAwIDUwIEwgNTIwIDUwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsI2Fycm93aGVhZCIvPgogIDxwYXRoIGQ9Ik0gNjcwIDUwIEwgNjkwIDUwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIgbWFya2VyLWVuZD0idXJsI2Fycm93aGVhZCIvPgoKICA8ZGVmcz4KICAgIDxtYXJrZXIgaWQ9ImFycm93aGVhZCIgbWFya2VyV2lkdGg9IjEwIiBtYXJrZXJIZWlnaHQ9IjEwIiByZWY9IjAgNSAxMCAxMCIgb3JpZW50PSJhdXRvIi8+CiAgPC9kZWZzPgo8L3N2Zz4=" alt="Architecture" class="img-fluid">
+                    </div>
+
+                    <h5>Composants principaux</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <strong>🌐 Frontend (HTML/Bootstrap)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Interface utilisateur responsive</li>
+                                        <li>Upload d'images drag-and-drop</li>
+                                        <li>Affichage des résultats en temps réel</li>
+                                        <li>Démo interactive avec images exemples</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <strong>🔧 Backend (Flask)</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>API REST pour les prédictions</li>
+                                        <li>Gestion des uploads d'images</li>
+                                        <li>Prétraitement des images</li>
+                                        <li>Endpoints de documentation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5>Modèle Machine Learning</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>🧠 Régression Logistique</h6>
+                            <p>Le modèle utilise une régression logistique vue comme un réseau de neurones à une couche :</p>
+                            
+                            <div class="code-block">
+                                <strong>Forward Propagation:</strong><br>
+                                $z = w^T x + b$<br>
+                                $a = \sigma(z) = \frac{1}{1 + e^{-z}}$
+                            </div>
+
+                            <div class="code-block">
+                                <strong>Loss Function:</strong><br>
+                                $J = -\frac{1}{m}\sum_{i=1}^{m}[y^{(i)}\log(a^{(i)}) + (1-y^{(i)})\log(1-a^{(i)})]$
+                            </div>
+
+                            <div class="code-block">
+                                <strong>Gradient Descent:</strong><br>
+                                $w = w - \alpha \cdot \frac{\partial J}{\partial w}$<br>
+                                $b = b - \alpha \cdot \frac{\partial J}{\partial b}$
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Installation -->
+                <section id="installation" class="mb-5">
+                    <h2>💻 Installation</h2>
+                    
+                    <h4>Prérequis</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <ul>
+                                <li>Python 3.7+</li>
+                                <li>pip (gestionnaire de paquets Python)</li>
+                                <li>Git (pour cloner le dépôt)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>Étapes d'installation</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>1. Cloner le dépôt</h5>
+                            <div class="code-block">
+                                <code>git clone https://github.com/leadylearn/logistic-regression-neural-network.git<br>
+cd logistic-regression-neural-network</code>
+                            </div>
+
+                            <h5>2. Créer un environnement virtuel (recommandé)</h5>
+                            <div class="code-block">
+                                <code>python -m venv venv<br>
+# Windows:<br>
+venv\Scripts\activate<br>
+# Linux/Mac:<br>
+source venv/bin/activate</code>
+                            </div>
+
+                            <h5>3. Installer les dépendances</h5>
+                            <div class="code-block">
+                                <code>pip install flask numpy matplotlib pillow scipy h5py scikit-image</code>
+                            </div>
+
+                            <h5>4. Lancer l'application</h5>
+                            <div class="code-block">
+                                <code>python app.py</code>
+                            </div>
+
+                            <h5>5. Accéder à l'application</h5>
+                            <p>Ouvrez votre navigateur et allez sur: <a href="http://localhost:5000" target="_blank">http://localhost:5000</a></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- API Reference -->
+                <section id="api" class="mb-5">
+                    <h2>🔌 Référence API</h2>
+                    
+                    <h4>Endpoints disponibles</h4>
+                    
+                    <div class="card endpoint-card mb-3">
+                        <div class="card-header">
+                            <strong>GET /</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Description:</strong> Page d'accueil avec interface de prédiction</p>
+                            <p><strong>Retour:</strong> HTML - Page principale</p>
+                        </div>
+                    </div>
+
+                    <div class="card endpoint-card mb-3">
+                        <div class="card-header">
+                            <strong>POST /predict</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Description:</strong> Prédire si une image contient un chat</p>
+                            <p><strong>Paramètres:</strong></p>
+                            <ul>
+                                <li><code>image</code> (file): Fichier image à classifier</li>
+                            </ul>
+                            <p><strong>Retour:</strong> JSON avec prédiction et confiance</p>
+                            <div class="code-block">
+                                <code>{<br>
+&nbsp;&nbsp;"success": true,<br>
+&nbsp;&nbsp;"prediction": "cat",<br>
+&nbsp;&nbsp;"confidence": 0.85,<br>
+&nbsp;&nbsp;"image": "base64_encoded_image"<br>
+}</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card endpoint-card mb-3">
+                        <div class="card-header">
+                            <strong>GET /demo</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Description:</strong> Page de démonstration interactive</p>
+                            <p><strong>Retour:</strong> HTML - Page de démo</p>
+                        </div>
+                    </div>
+
+                    <div class="card endpoint-card mb-3">
+                        <div class="card-header">
+                            <strong>GET /docs</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Description:</strong> Documentation technique</p>
+                            <p><strong>Retour:</strong> HTML - Page de documentation</p>
+                        </div>
+                    </div>
+
+                    <div class="card endpoint-card mb-3">
+                        <div class="card-header">
+                            <strong>GET /api/info</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Description:</strong> Informations sur l'API</p>
+                            <p><strong>Retour:</strong> JSON avec métadonnées</p>
+                            <div class="code-block">
+                                <code>{<br>
+&nbsp;&nbsp;"name": "Cat Classifier API",<br>
+&nbsp;&nbsp;"version": "1.0.0",<br>
+&nbsp;&nbsp;"accuracy": "~70%",<br>
+&nbsp;&nbsp;"input_size": "64x64 pixels RGB"<br>
+}</code>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Examples -->
+                <section id="examples" class="mb-5">
+                    <h2>💡 Exemples d'utilisation</h2>
+                    
+                    <h4>Exemple 1: Utilisation avec curl</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="code-block">
+                                <code>curl -X POST -F "image=@/path/to/image.jpg" http://localhost:5000/predict</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Exemple 2: Utilisation avec Python</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="code-block">
+                                <code>import requests<br><br>
+# URL de l'API<br>
+url = "http://localhost:5000/predict"<br><br>
+# Préparer le fichier<br>
+with open('image.jpg', 'rb') as f:<br>
+&nbsp;&nbsp;files = {'image': f}<br>
+&nbsp;&nbsp;response = requests.post(url, files=files)<br><br>
+# Résultat<br>
+result = response.json()<br>
+print(f"Prédiction: {result['prediction']}")<br>
+print(f"Confiance: {result['confidence']:.2%}")</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Exemple 3: Utilisation avec JavaScript</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="code-block">
+                                <code>const formData = new FormData();<br>
+formData.append('image', fileInput.files[0]);<br><br>
+fetch('/predict', {<br>
+&nbsp;&nbsp;method: 'POST',<br>
+&nbsp;&nbsp;body: formData<br>
+})<br>.then(response => response.json())<br>.then(data => {<br>
+&nbsp;&nbsp;console.log('Prédiction:', data.prediction);<br>
+&nbsp;&nbsp;console.log('Confiance:', data.confidence);<br>
+});</code>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Performance -->
+                <section id="performance" class="mb-5">
+                    <h2>📊 Performance et métriques</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <strong>📈 Métriques du modèle</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><strong>Accuracy (entraînement):</strong> ~99%</li>
+                                        <li><strong>Accuracy (test):</strong> ~70%</li>
+                                        <li><strong>Dataset:</strong> 209 images train, 50 images test</li>
+                                        <li><strong>Temps de prédiction:</strong> &lt;100ms</li>
+                                        <li><strong>Taille du modèle:</strong> ~100KB</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <strong>⚡ Performance système</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><strong>Temps de réponse API:</strong> 200-500ms</li>
+                                        <li><strong>Memory usage:</strong> ~50MB</li>
+                                        <li><strong>Concurrent users:</strong> ~10 (développement)</li>
+                                        <li><strong>Image processing:</strong> 64x64 → 12288 features</li>
+                                        <li><strong>Framework:</strong> Flask (development server)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Limitations connues</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <ul>
+                                <li>🔶 <strong>Overfitting:</strong> Accuracy train >> Accuracy test</li>
+                                <li>🖼️ <strong>Résolution limitée:</strong> Uniquement 64x64 pixels</li>
+                                <li>🎯 <strong>Classification binaire:</strong> Uniquement chat/non-chat</li>
+                                <li>📊 <strong>Dataset petit:</strong> 259 images totales</li>
+                                <li>🔄 <strong>Pas de data augmentation:</strong> Variabilité limitée</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Troubleshooting -->
+                <section id="troubleshooting" class="mb-5">
+                    <h2>🔧 Dépannage</h2>
+                    
+                    <h4>Problèmes courants</h4>
+                    
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>❌ "ModuleNotFoundError: No module named 'flask'"</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Cause:</strong> Flask n'est pas installé</p>
+                            <p><strong>Solution:</strong> <code>pip install flask</code></p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>❌ "Model not loaded" erreur</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Cause:</strong> Les données d'entraînement ne sont pas trouvées</p>
+                            <p><strong>Solution:</strong> Vérifiez que le dossier "datasets" avec les fichiers .h5 est présent</p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>❌ "Permission denied" sur le port 5000</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Cause:</strong> Le port est déjà utilisé</p>
+                            <p><strong>Solution:</strong> Changez le port: <code>app.run(port=5001)</code></p>
+                        </div>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>❌ Images non reconnues</strong>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Cause:</strong> Format d'image non supporté ou corrompu</p>
+                            <p><strong>Solution:</strong> Utilisez des images JPG/PNG valides</p>
+                        </div>
+                    </div>
+
+                    <h4 class="mt-4">Conseils d'optimisation</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <ul>
+                                <li>🚀 <strong>Utiliser un serveur de production:</strong> Gunicorn + Nginx</li>
+                                <li>💾 <strong>Cache du modèle:</strong> Éviter de ré-entraîner à chaque démarrage</li>
+                                <li>🔄 <strong>Asynchronous processing:</strong> Pour les gros volumes</li>
+                                <li>📊 <strong>Monitoring:</strong> Ajouter des logs et métriques</li>
+                                <li>🔒 <strong>Sécurité:</strong> Validation des inputs et rate limiting</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>🐱 Cat Classifier</h5>
+                    <p>TP de Régression Logistique avec Flask</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <h5>Liens utiles</h5>
+                    <a href="/" class="text-light me-3">Accueil</a>
+                    <a href="/demo" class="text-light me-3">Démo</a>
+                    <a href="https://github.com/leadylearn/logistic-regression-neural-network" class="text-light">GitHub</a>
+                </div>
+            </div>
+            <hr class="my-3">
+            <p class="text-center mb-0">&copy; 2024 - Développé dans le cadre d'un TP de Machine Learning</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Smooth scrolling for sidebar links
+        document.querySelectorAll('.sidebar a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Highlight current section in sidebar
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const sidebarLinks = document.querySelectorAll('.sidebar a[href^="#"]');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
